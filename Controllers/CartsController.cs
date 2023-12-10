@@ -1,24 +1,24 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using ScamStore.Models;
+using ScamStore.Services;
 
 namespace ScamStore.Controllers
 {
     public class CartsController : Controller
     {
-        private readonly string _cartSessionKey;
         private readonly ApplicationDbContext _context;
+        private readonly CartService _cartService;
 
-        public CartsController(ApplicationDbContext context)
+        public CartsController(CartService cartService, ApplicationDbContext context)
         {
-            _cartSessionKey = "Cart";
             _context = context;
+            _cartService = cartService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var cart = GetCart();
+            var cart = _cartService.GetCart();
 
             if (cart == null)
             {
@@ -46,7 +46,7 @@ namespace ScamStore.Controllers
         [HttpPost]
         public async Task<IActionResult> AddToCart(int productId, int quantity)
         {
-            var cart = GetCart();
+            var cart = _cartService.GetCart();
 
             if (cart == null)
             {
@@ -73,21 +73,9 @@ namespace ScamStore.Controllers
             }
 
 
-            SaveCart(cart);
+            _cartService.SaveCart(cart);
 
             return RedirectToAction("Index");
-        }
-
-        private Cart? GetCart()
-        {
-            var cartJson = HttpContext.Session.GetString(_cartSessionKey);
-            return cartJson == null ? new Cart() : JsonConvert.DeserializeObject<Cart>(cartJson);
-        }
-
-        private void SaveCart(Cart cart)
-        {
-            var cartJson = JsonConvert.SerializeObject(cart);
-            HttpContext.Session.SetString(_cartSessionKey, cartJson);
         }
     }
 }

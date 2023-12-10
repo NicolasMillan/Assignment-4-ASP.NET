@@ -1,8 +1,7 @@
-using System.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using MySql.Data.MySqlClient;
 using ScamStore.Models;
+using ScamStore.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +25,8 @@ builder.Services.AddDefaultIdentity<IdentityUser>()
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddTransient<DbInitializer>();
+
+builder.Services.AddScoped<CartService>();
 
 var app = builder.Build();
 
