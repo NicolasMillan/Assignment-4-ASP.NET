@@ -77,5 +77,27 @@ namespace ScamStore.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public IActionResult RemoveFromCart(int productId)
+        {
+            var cart = _cartService.GetCart();
+
+            if(cart == null)
+            {
+                return NotFound();
+            }
+
+            var cartItem = cart.CartItems.Find(cartItem => cartItem.ProductId == productId);
+
+            if (cartItem != null)
+            {
+                cart.CartItems.Remove(cartItem);
+
+                _cartService.SaveCart(cart);
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }

@@ -1,5 +1,5 @@
-using ScamStore.Models;
 using Newtonsoft.Json;
+using ScamStore.Models;
 
 namespace ScamStore.Services
 
@@ -14,16 +14,18 @@ namespace ScamStore.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public Cart? GetCart()
-        {
-            var cartJson = _httpContextAccessor.HttpContext.Session.GetString(_cartSessionKey);
-            return cartJson == null ? new Cart() : JsonConvert.DeserializeObject<Cart>(cartJson);
-        }
-
         public void SaveCart(Cart cart)
         {
             var cartJson = JsonConvert.SerializeObject(cart);
+
             _httpContextAccessor.HttpContext.Session.SetString(_cartSessionKey, cartJson);
+        }
+
+        public Cart? GetCart()
+        {
+            var cartJson = _httpContextAccessor.HttpContext.Session.GetString(_cartSessionKey);
+
+            return cartJson == null ? new Cart() : JsonConvert.DeserializeObject<Cart>(cartJson);
         }
     }
 }
